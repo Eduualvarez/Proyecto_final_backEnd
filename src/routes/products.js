@@ -4,6 +4,7 @@ import { config } from '../config/config.js';
 import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 import { Product } from "../models/products.models.js";
+import { pagination } from "../models/paginate.js";
 
 
 
@@ -18,27 +19,40 @@ export const pathToProducts = path.join(config.dirname, './src/data/products.jso
 
 ProductsRouter.get('/', async (req, res)=>{
   try {
-    const {limit} =  req.query
-    console.log(limit)
-    let products_data= await Product.aggregate([
-      {
-        $group:{
-          id:null,
-          count:{$count:{}}
+    let {limit, page, query, sort} =  req.query
 
-        }
-      }
-    ])
-  
+    limit = limit ? Number(limit) : 10;
+    const skip = (limit * page)-limit;
+
+    page = page ? Number(page) : 1;
+
+    let searchQuery = {};//si no viene la query 
+    if(query) searchQuery = { "product.title": { $regex: query, $options: 'i'}};
+
+
+    let sortQuery = {};
+    if (sort === 'asc') {
+      sortQuery = { "product.price": 1 }; // Ordenar por precio ascendente
+    } else if (sort === 'desc') {
+      sortQuery = { "product.price": -1 }; // Ordenar por precio descendente
+    } 
+    let products_data =  await Product.find(searchQuery)
+                     .limit(limit)
+                     .skip(skip)
+                     .sort(sortQuery)       
+
+    const totalProducts = await Product.countDocuments(searchQuery)
     res.status(200).send
-          ({message:'products get with success',
-            data:products_data})
-    //console.log({products_data})
-
-  } catch (error) {
+    ({
+      message:'products get with success',
+      data: products_data,
+      pagination: await pagination(totalProducts, limit, page, query, sort)
+    })} // try
+              
+    catch (error) {
     res.status(500).send({mesagge:`server internal error: ${error}`})
-  }
-})
+  }//catch
+})//enpoint get
 
 
 
