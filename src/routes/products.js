@@ -2,9 +2,10 @@ import { Router } from "express";
 import path from 'path'
 import { config } from '../config/config.js';
 import fs from 'fs'
-import { v4 as uuidv4 } from 'uuid'
+
 import { Product } from "../models/products.models.js";
 import { pagination } from "../models/paginate.js";
+import { validate_req_body } from "../middlewares/validate_product_model_input.js";
 
 
 
@@ -19,7 +20,7 @@ export const pathToProducts = path.join(config.dirname, './src/data/products.jso
 
 ProductsRouter.get('/', async (req, res)=>{
   try {
-    let {limit, page, query, sort} =  req.query
+    let {limit, page, query, sort, categories, status} =  req.query
 
     limit = limit ? Number(limit) : 10;
     const skip = (limit * page)-limit;
@@ -28,7 +29,16 @@ ProductsRouter.get('/', async (req, res)=>{
 
     let searchQuery = {};//si no viene la query 
     if(query) searchQuery = { "product.title": { $regex: query, $options: 'i'}};
+    if (categories) searchQuery = {"product.category": { $regex: categories, $options: 'i'}}//si viene una categories
 
+    if (status !== undefined){      //si viene un status para filtrar por el mismo 
+      const str = 'true';
+       (status===str)
+       ?(status=true)
+       :(status=false);//pasando de str a booleano para buscar en la db
+      };
+     searchQuery = {'product.status':status}
+    
 
     let sortQuery = {};
     if (sort === 'asc') {
@@ -41,6 +51,7 @@ ProductsRouter.get('/', async (req, res)=>{
                      .skip(skip)
                      .sort(sortQuery)       
 
+                     
     const totalProducts = await Product.countDocuments(searchQuery)
     res.status(200).send
     ({
@@ -52,43 +63,17 @@ ProductsRouter.get('/', async (req, res)=>{
     catch (error) {
     res.status(500).send({mesagge:`server internal error: ${error}`})
   }//catch
-})//enpoint get
+})//endpoint get
 
 
 
-ProductsRouter.post('/', async (req, res) => {
-    
-
+ProductsRouter.post('/',validate_req_body, async (req, res) => {
   
-    try {
-        let productsString = await fs.promises.readFile(pathToProducts, 'utf-8')
-        const products = JSON.parse(productsString)
+    try { 
       
-        const id = uuidv4() 
-          
-    
-        /** @type {Product} */
-        const {
-          title, description, code, price, status, stock, category, thumbnails,
-        } = req.body
-        
-        
-         /** @type {Product} */
-        const product = {
-          //id autogenerado
-          id, title, description, code, price, status, stock, category, thumbnails,
-        }
-            if(!title || !description || !code || !price || !status || !stock || !category || !thumbnails)
-                {
-                    throw new Error(`alguno de los campos esta incompleto, o es de el tipo incorrecto`) 
-                }
-
-
-        products.push(product)
-      
-        const productsStringified = JSON.stringify(products, null, '\t')
-        await fs.promises.writeFile(pathToProducts, productsStringified)
-        res.status(200).send({ message: 'Producto creado', data: product })
+      const product_to_create = validate_req_body
+      Product.insertOne(product_to_create)
+       res.status(200).send({ message: 'Producto creado', data: product_to_create })
         
     } catch (error) {
         res.status(400).send({mesagge:`error: ${error}`})
@@ -96,7 +81,9 @@ ProductsRouter.post('/', async (req, res) => {
 
 
     //para obtener un producto solo mediante parametros 
-    ProductsRouter.get('/:pid', async (req, res)=>{
+
+
+ProductsRouter.get('/:pid', async (req, res)=>{
       const {pid} = req.params;
     try {
 
@@ -118,7 +105,7 @@ ProductsRouter.post('/', async (req, res) => {
 
       //metodo patch
 
-      ProductsRouter.put(('/:pid'), async (req, res)=>{
+ProductsRouter.put(('/:pid'), async (req, res)=>{
 
         const {pid}= req.params;
 
@@ -174,7 +161,7 @@ ProductsRouter.post('/', async (req, res) => {
       })
 
       //metodo delete 
-      ProductsRouter.delete('/:pid', async (req, res)=>{
+ProductsRouter.delete('/:pid', async (req, res)=>{
         const {pid} = req.params;
       try {
   

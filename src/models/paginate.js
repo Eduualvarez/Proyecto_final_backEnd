@@ -2,8 +2,8 @@
 export const pagination= async (totalProducts, limit, page, query, sort)=>{
   
     
-   let total_pages =Math.ceil(totalProducts/limit)
-      if (total_pages === 0 ){total_pages = 1}
+   let total_pages =Math.ceil(totalProducts/limit)// obtenemos el numero de paginas dividiendo el total de docs entre el limite que le pongamos, ya que el limit so los que vamos a ver 
+      if (total_pages === 0 ){total_pages = 1}//abarcamos el caso qeu en la division nos de 0, y le asignamos 1 ya que solo tendremos esa pagina 
    let actual_page = page;
       if (actual_page>total_pages || actual_page < 1){throw new Error("the page can't be major as total_pages or minor to 0")}
     const prev_page=(actual_page === 1 )? null : actual_page -1;
