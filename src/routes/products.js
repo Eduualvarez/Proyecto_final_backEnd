@@ -7,6 +7,7 @@ import { Product } from "../models/products.models.js";
 
 
 
+
 export const ProductsRouter = Router();
 
 export const pathToProducts = path.join(config.dirname, './src/data/products.json');
@@ -17,11 +18,11 @@ export const pathToProducts = path.join(config.dirname, './src/data/products.jso
 
 ProductsRouter.get('/', async (req, res)=>{
   try {
-    let product = new Product
-    let ProductsToString = await product.find();
-    product =  JSON.parse(ProductsToString);
-    res.status(200).send({product})
-    console.log({product})
+   
+    let products_data= await Product.find({});
+    res.status(200).send({message:'products get with success',
+                          data:products_data})
+    console.log({products_data})
 
   } catch (error) {
     res.status(500).send({mesagge:`server internal error: ${error}`})
