@@ -18,11 +18,22 @@ export const pathToProducts = path.join(config.dirname, './src/data/products.jso
 
 ProductsRouter.get('/', async (req, res)=>{
   try {
-   
-    let products_data= await Product.find({});
-    res.status(200).send({message:'products get with success',
-                          data:products_data})
-    console.log({products_data})
+    const {limit} =  req.query
+    console.log(limit)
+    let products_data= await Product.aggregate([
+      {
+        $group:{
+          id:null,
+          count:{$count:{}}
+
+        }
+      }
+    ])
+  
+    res.status(200).send
+          ({message:'products get with success',
+            data:products_data})
+    //console.log({products_data})
 
   } catch (error) {
     res.status(500).send({mesagge:`server internal error: ${error}`})
