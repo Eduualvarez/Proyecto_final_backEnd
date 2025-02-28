@@ -1,8 +1,4 @@
 import { Router } from "express";
-import path from 'path'
-import { config } from '../config/config.js';
-import fs from 'fs'
-
 import { Product } from "../models/products.models.js";
 import { pagination } from "../models/paginate.js";
 import { validate_req_body } from "../middlewares/validate_product_model_input.js";
@@ -12,7 +8,7 @@ import { validate_req_body } from "../middlewares/validate_product_model_input.j
 
 export const ProductsRouter = Router();
 
-export const pathToProducts = path.join(config.dirname, './src/data/products.json');
+
 
 
 
@@ -35,9 +31,10 @@ ProductsRouter.get('/', async (req, res)=>{
       const str = 'true';
        (status===str)
        ?(status=true)
-       :(status=false);//pasando de str a booleano para buscar en la db
+       :(status=false)//pasando de str a booleano para buscar en la db
+       searchQuery = {'product.status':status}
       };
-     searchQuery = {'product.status':status}
+         
     
 
     let sortQuery = {};
@@ -49,7 +46,7 @@ ProductsRouter.get('/', async (req, res)=>{
     let products_data =  await Product.find(searchQuery)
                      .limit(limit)
                      .skip(skip)
-                     .sort(sortQuery)       
+                     .sort(sortQuery) 
 
                      
     const totalProducts = await Product.countDocuments(searchQuery)
@@ -71,12 +68,18 @@ ProductsRouter.post('/',validate_req_body, async (req, res) => {
   
     try { 
       
-      const product_to_create = validate_req_body
-      Product.insertOne(product_to_create)
-       res.status(200).send({ message: 'Producto creado', data: product_to_create })
+      const product_to_create = req.body;
+
+    const validate_if_exist = await Product.findOne({"title":product_to_create.title})
+      if (validate_if_exist){throw new Error('el producto ya existe ')}
+      
+      const newProduct = new Product(product_to_create);
+      await newProduct.save();
+
+       res.status(200).send({ message: 'Producto creado', data: newProduct })
         
     } catch (error) {
-        res.status(400).send({mesagge:`error: ${error}`})
+        res.status(400).send({message:`error: ${error}`})
     }});
 
 
@@ -86,80 +89,58 @@ ProductsRouter.post('/',validate_req_body, async (req, res) => {
 ProductsRouter.get('/:pid', async (req, res)=>{
       const {pid} = req.params;
     try {
-
-      let productsString = await fs.promises.readFile(pathToProducts, 'utf-8')
-      const products = JSON.parse(productsString)
+      const product_filtered_byId = await Product.findOne({"_id":pid})
+        res.status(200).send({message:'get product by Id with success', data: product_filtered_byId})
       
-      const productsFiltred = products.filter((product)=>product.id === pid)
-      if (productsFiltred.length === 0) {
-        res.status(404).send({ message: 'Producto no encontrado' });
-      } else {
-        res.status(200).send(productsFiltred[0]);  // Enviamos el primer producto encontrado
-      }
     } catch (error) {
-      res.status(500).send({ message: `Error: ${error}` })}})
+      res.status(500).send({ message: "product not found, or dosen't exist" })}})
 
 
 
 
 
       //metodo patch
-
-ProductsRouter.put(('/:pid'), async (req, res)=>{
-
+      ProductsRouter.put(('/:pid'), async (req, res)=>{
+        
         const {pid}= req.params;
-
-   
-      
-      try {
-        // Leemos y parseamos el archivo de productos
-        let productsString = await fs.promises.readFile(pathToProducts, 'utf-8');
-        const products = JSON.parse(productsString);
-    
-        // Buscamos el producto que se quiere actualizar
-        const productToPatch = products.find((product) => product.id === pid);
-    
-        // Verificamos si el producto existe
-        if (!productToPatch) {
-          return res.status(404).json({ message: `Producto con ID ${pid} no encontrado` });
-        }
-    
-        // Validamos los datos que vienen en el cuerpo de la solicitud
-        const { title, description, code, price, status, stock, category, thumbnails } = req.body;
-        if (!title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
-          return res.status(400).json({ message: 'Todos los campos deben ser proporcionados' });
-        }
-    
-        // Actualizamos el producto con los nuevos datos
-        const updatedProduct = {
-          id: pid, // Mantenemos el mismo ID
-          title,
-          description,
+        const { title,
+          description, 
           code,
-          price,
-          status,
+          price, 
+          status, 
           stock,
           category,
-          thumbnails,
-        };
-    
-        // Reemplazamos el producto en la lista
-        const updatedProducts = products.map((product) =>
-          product.id === pid ? updatedProduct : product
-        );
-    
-        // Escribimos la lista de productos actualizada en el archivo
-        await fs.promises.writeFile(pathToProducts, JSON.stringify(updatedProducts, null, 2));
-    
-        // Respondemos con éxito
-        res.status(200).json({ product: updatedProduct, message: 'Producto actualizado' });
-      } catch (error) 
-      {
-        res.status(500).json({ message: 'Error al actualizar el producto. Intente nuevamente más tarde.' });
-      }
-    
-      })
+          thumbnails} = req.body;
 
+        
+        try {
+          // Leemos y parseamos el archivo de productos
+          let product_to_patch = await Product.findOneAndUpdate({"_id":pid},{"product":{
+            title,
+            description,
+            code,
+            price,
+           status,
+           stock,
+           category,
+           thumbnails}},{new:true});
+
+            
+            console.log(product_to_patch)                                                                
+           
+
+              res.status(200).send({message:'product updated successfull',data:product_to_patch}) 
+          
+          
+
+        } catch (error) 
+        {
+          res.status(500).json({ message: 'Error al actualizar el producto. Intente nuevamente más tarde.',error });
+          }
+          
+          })//metodo patch
+          
+          /*
       //metodo delete 
 ProductsRouter.delete('/:pid', async (req, res)=>{
         const {pid} = req.params;
@@ -186,4 +167,4 @@ ProductsRouter.delete('/:pid', async (req, res)=>{
       } catch (error) {
         res.status(500).send({ message: `Error: ${error}` })}})
         
-        
+        */

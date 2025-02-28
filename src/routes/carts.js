@@ -3,7 +3,7 @@ import { config } from "../config/config.js";
 import {  v4 as uuidv4,} from "uuid";
 import path from 'path'
 import fs from 'fs'
-import { pathToProducts } from "./products.js";
+//import { pathToProducts } from "./products.js";
 export const CartsRouter = Router()
 
 const pathToCarts = path.join(config.dirname, './src/data/carts.json');
