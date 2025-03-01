@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Product } from "../models/products.models.js";
-import { pagination } from "../models/paginate.js";
+import { pagination } from "../middlewares/paginate.js";
 import { validate_req_body } from "../middlewares/validate_product_model_input.js";
 
 
