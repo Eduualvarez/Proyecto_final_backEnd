@@ -8,11 +8,11 @@
             status, 
             stock,
             category,
-            thumbnails} = await req.body;
+            thumbnails} = req.body;
 
     if((title||description||code||price||status||stock||category||thumbnails)===undefined)
         {
-           throw new Error("need full all fields")
+           error=("need full all fields")
         }
        
         next()

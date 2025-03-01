@@ -10,39 +10,39 @@ const productSchema = new mongoose.Schema({
     title: 
     {
         type:String,
-            required:true
+            required:false
         },
     description:  
     {
         type:String,
-        required:true
+        required:false
     },
     code:  
     {
         type:String,
-        required:true
+        required:false
     },
     price: 
     {
         type:Number,
-        requiered:true
+        requiered:false
 
     },
     status:
     { 
         type:Boolean,
-        requiered:true
+        requiered:false
     },
     stock:Number,
     category:  
     {   
         type:String,
-        required:true
+        required:false
     },
     thumbnails:
     {
         type:[String],
-        requiered:true
+        requiered:false
     },
     quantity: 
     {
