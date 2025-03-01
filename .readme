@@ -1,11 +1,12 @@
 abrir en el correspondiente editor de codigo.
 abrir la terminal, desde la raiz(sin entrar a ninguna carpeta)
-ejecutar el comando npm i o npm install, esto nos descargara las dependencias necesarias para levantar el proyecto y crea la carpeta node_modules.
+ejecutar el comando npm i o npm install, esto nos descargar las dependencias necesarias para levantar el proyecto y crea la carpeta node_modules.
 luego de esto en la terminal ejecutar el comando npm run dev, esto nos levantara el servidor de el proyecto.
-desde postman ya con el servidor levantado, podremos hacer las diferentes peticiones 
+desde postman ya con el servidor levantado, podremos hacer las diferentes peticiones,
+implementadas en la carpeta collections
 
 
-En este proyecto nos estamos centrando en las request y responses de el servdor con el cliente, y como handlearlas tambien con su respectivo manejo de errores, finalmente vamos a conectarlo a una db, para persistir los datos en ella y no en archivos, ya que para grandes masas de datos esto ya no es practico.
+En este proyecto nos estamos centrando en las request y responses de el servdor con el cliente, y como handlearlas tambien con su respectivo manejo de errores.
 
 
-dependencias: Express(para levantar el servidor y configurar los respectivos endPoints), uuid(para el generado de IDs unicos y autogenerados)
+dependencias: Express(para levantar el servidor y configurar los respectivos endPoints)
