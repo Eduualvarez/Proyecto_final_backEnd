@@ -1,0 +1,132 @@
+{
+	"info": {
+		"_postman_id": "1ecc1b15-58b9-4c52-bd3c-3de4cc153b03",
+		"name": "Products",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41103814"
+	},
+	"item": [
+		{
+			"name": "getProducts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getProductsById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/products/67be688cb199666d477cc028",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products",
+						"67be688cb199666d477cc028"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postProduct",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"title\": \"aaaa\",\r\n  \"description\": \"Reattachment\",\r\n  \"code\": \"#7c4b97\",\r\n  \"price\": 66,\r\n  \"status\": false,\r\n  \"stock\": 590,\r\n  \"category\": \"Pork Ham Prager\",\r\n  \"thumbnails\": [\"turpis integer aliquet massa id lobortis convallis tortor risus dapibus augue vel accumsan tellus nisi\"]\r\n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/products/67be688cb199666d477cc025",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products",
+						"67be688cb199666d477cc025"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutProducts",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\r\n   \"product\": {\r\n            \"title\": \"producto 5\",\r\n            \"description\": \"descripcion de prueba 5\",\r\n            \"code\": \"abc 10\",\r\n            \"price\": 105,\r\n            \"status\": false,\r\n            \"stock\": 250,\r\n            \"category\": \"category 1\",\r\n            \"thumbnails\": [\r\n                \"prueba 5\",\r\n                \"prueba 6\"\r\n            ]\r\n        }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/products/67be688cb199666d477cc028",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products",
+						"67be688cb199666d477cc028"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteProductById",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/products/67be688cb199666d477cc024",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products",
+						"67be688cb199666d477cc024"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
